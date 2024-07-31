@@ -54,6 +54,23 @@ export default function InvoicePage() {
     return localISOTime + "Z";
   };
 
+  const computeFinalPrice = () => {
+    const totalMenuPrice = menuInfo.reduce(
+      (sum, menu) => sum + menu.price * (menu.count || 0),
+      0
+    );
+
+    const discountAmount =
+      useTime > 0 ? ((usageTime - useTime) / unitTime) * discount : 0;
+
+    const discountAmountIsNan = isNaN(discountAmount) ? 0 : discountAmount;
+    const preDiscountIsNan = isNaN(preDiscount) ? 0 : preDiscount;
+
+    const finalPrice = totalMenuPrice - discountAmountIsNan - preDiscountIsNan;
+
+    return isNaN(finalPrice) || finalPrice <= 0 ? 0 : finalPrice;
+  };
+
   const handlePayment = () => {
     try {
       const visitTime = convertToISOString(selectedDate, selectedTime);
@@ -63,10 +80,7 @@ export default function InvoicePage() {
         visitTime: visitTime,
         useTime: useTime,
         people: usePeople,
-        totalPrice: menuInfo.reduce(
-          (total, menu) => total + menu.price * menu.count,
-          0
-        ),
+        totalPrice: computeFinalPrice(),
         orderType: "RESERVATION",
         reserveMenu: menuInfo.map((menu) => ({
           menuNumber: menu.menuNumber,

@@ -57,9 +57,7 @@ jobs:
           script: |
             #!/bin/bash
             set -e
-            docker stop web-server || true
-            docker rm web-server || true
-            docker pull ${{ steps.login-ecr.outputs.registry }}/web-server:latest
-            docker run -d --name web-server -p 80:80 ${{ steps.login-ecr.outputs.registry }}/web-server:latest
-        env:
-          DOCKER_CLI_EXPERIMENTAL: enabled
+            sudo docker stop web-server || true
+            sudo docker rm web-server || true
+            sudo docker pull ${{ steps.login-ecr.outputs.registry }}/web-server:latest
+            sudo docker run -d --name web-server -p 80:80 ${{ steps.login-ecr.outputs.registry }}/web-server:latest
